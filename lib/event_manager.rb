@@ -32,6 +32,10 @@ def peak_registration_hours(registration_hours)
   peak_hours
 end
 
+def peak_registration_days(registration_days)
+
+end
+
 def legislators_by_zipcode(zipcode)
   civic_info = Google::Apis::CivicinfoV2::CivicInfoService.new
   civic_info.key = 'AIzaSyClRzDqDh5MsXwnCWi0kOiiBivP6JsSyBw'
@@ -68,7 +72,8 @@ contents = CSV.open(
 template_letter = File.read('form_letter.erb')
 erb_template = ERB.new template_letter
 
-reg_times = []
+reg_hours = []
+reg_days = []
 contents.each do |row|
   id = row[0]
   name = row[:first_name]
@@ -76,16 +81,16 @@ contents.each do |row|
   legislators = legislators_by_zipcode(zipcode)
   phone_number = clean_phone_number(row[:homephone])
 
-  reg_date = row[:regdate]
-  reg_time = reg_date.split[1]
-  reg_times.push(reg_time)
+  reg_timestamp = row[:regdate]
+  reg_days.push(reg_timestamp.split[0])
+  reg_hours.push(reg_timestamp.split[1])
 
   form_letter = erb_template.result(binding)
 
   save_thank_you_letter(id, form_letter)
 end
 
-peak_reg_time = peak_registration_hours(reg_times)
+peak_reg_time = peak_registration_hours(reg_hours)
 print "Peak registration hours are: \n"
 peak_reg_time.each do |k, v|
   print "Hour: #{k}, frequency: #{v} times\n"
