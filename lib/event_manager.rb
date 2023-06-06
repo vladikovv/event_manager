@@ -18,22 +18,34 @@ def clean_phone_number(phone_number)
 end
 
 def peak_registration_hours(registration_hours)
-  result = Hash.new(0)
-  registration_hours.reduce(result) do |timestamps, timestamp|
+  registration_hours_hash = Hash.new(0)
+  registration_hours.reduce(registration_hours_hash) do |timestamps, timestamp|
     timestamp_hr = timestamp.split(':')[0]
     timestamps[timestamp_hr] += 1
     timestamps
   end
-  max_hours_quantity = result.values.max
-  peak_hours = Hash.new(0)
-  result.each do |key, value|
-    peak_hours[key] = value if value == max_hours_quantity
+  max_hours_quantity = registration_hours_hash.values.max
+  result = Hash.new(0)
+  registration_hours_hash.each do |key, value|
+    result[key] = value if value == max_hours_quantity
   end
-  peak_hours
+  result
 end
 
-def peak_registration_days(registration_days)
-
+def peak_registration_days(registration_dates)
+  registration_days_hash = Hash.new(0)
+  registration_dates.reduce(registration_days_hash) do |dates, date|
+    parsed_current_date = DateTime.strptime(date, '%m/%d/%Y')
+    current_day_of_week = parsed_current_date.strftime('%A')
+    dates[current_day_of_week] += 1
+    dates
+  end
+  max_registrations_per_day = registration_days_hash.values.max
+  result = Hash.new(0)
+  registration_days_hash.each do |key, value|
+    result[key] = value if value == max_registrations_per_day
+  end
+  result
 end
 
 def legislators_by_zipcode(zipcode)
@@ -94,5 +106,11 @@ peak_reg_time = peak_registration_hours(reg_hours)
 print "Peak registration hours are: \n"
 peak_reg_time.each do |k, v|
   print "Hour: #{k}, frequency: #{v} times\n"
+end
+
+peak_reg_days = peak_registration_days(reg_days)
+print "\nPeak registration days are: \n"
+peak_reg_days.each do |k, v|
+  print "Day: #{k}, frequency: #{v} times\n"
 end
 
